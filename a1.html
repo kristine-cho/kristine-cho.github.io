@@ -14,17 +14,79 @@
   <body>
     <h1>Kristine's Assignment 1 - Blink</h1>
     <div class="header">
-      <img src="red-panda.jpg" />
-      <p>Questions</p>
+      <img src="circuit.png" />
+      <p>Circuit Image</p>
+      <p1>The 220Ω resistors are used to limit the current going through the LEDs to prevent them from burning out. 
+        I chose the 220Ω resistors because my calculations showed me that I would need a resistor of at least 160Ω
+        to keep the current below 20mA, which is the desired current for these LEDs. Since I do not have a 160Ω resistor,
+        I chose to use a 220Ω resistor, which is the next closest and safest option available in my kit.
+        <img src="blinkCalcul-kacho-3.jpg" />
+        </p1>
     </div>
-  </body>
-  <body> 
-    <h2> Questions</h2>
-    <p>1: Draw a graph where the X axis is time and the Y axis is voltage across the LEDs. Draw a line for each of your 3 LEDs.</p>
-    <p>2: How many LEDs could you blink independently with your Arduino? How much current would that draw? </p>
-    <p>3: How fast do you need to blink your LEDs until you no longer can tell that they are blinking? </p>
-    <p>4: 5: Did you use AI tools in completing this assignment? If yes, please provide details on how/when, 
+    <div class="header">
+      <img src="blinkSchematic-kacho-1.jpg" />
+      <p>Schematic</p>
+      <p1> I made the 3 schematics not connected to each other because I wanted to show that each 
+        LED is connected to a different pin on the Arduino so that they can blink independently.
+        I made these schematics shorthand to show the circuit clearly and simply. 
+      </p1>
+    </div>
+    <div class="header">
+      <img src="blink-kacho.gif" />
+      <p>Circuit's Operation gif</p>
+      <p1> I used 3 LEDs, 3 resistors, and an Arduino to create a blinking circuit.
+          Each LED is connected to a different pin on the Arduino so that they can blink independently. 
+          My circuit runs with a 0.5 second timer, turning a light on for 0.5 seconds and off for 
+          0.5 seconds and goes through each lightbulb in rotation.</p1>
+    </div>
+    <div> 
+      <h2> Code Snippet</h2>
+      <code>
+        // initializing a timer for 1 second
+int timer = 500; 
+
+// the setup function runs once when you press reset or power the board
+void setup() {
+  // for loop initializing pins 10-12 as an output
+  for (int thisPin = 10; thisPin < 13; thisPin++){
+    // initializing thisPin as an output
+    pinMode(thisPin, OUTPUT);
+  }
+}
+
+// the loop function runs over and over again forever
+void loop() {
+  // forloop for turning each pin on and off from pin 10-12
+  for (int thisPin = 10; thisPin < 13; thisPin++) {
+    //turns on the LED by making the voltage high
+    digitalWrite(thisPin, HIGH);
+    //waits 1 second
+    delay(timer);
+    //turns off the LED by making the voltage low
+    digitalWrite(thisPin, LOW);
+    //waits 1 second
+    delay(timer);
+  }
+}
+      </code>
+
+    </div>
+    <div>
+      <h2> Questions</h2>
+      <p>1: Draw a graph where the X axis is time and the Y axis is voltage across the LEDs. Draw a line for each of your 3 LEDs.</p>
+      <img src="blinkVTgraph-kacho-2.jpg" />
+      <p>2: How many LEDs could you blink independently with your Arduino? How much current would that draw? </p>
+      <p1> I know we have 14 pins, from 0-13, but when I try plugging them all in with LEDs,
+        I could only get 13 pins to blink individually. Pin 0 would constantly stay on without blinking even when it was 
+        a part of my for-loop. This circuit would draw 14.5mA of current if we calculate the current using Ohms law.
+        <img src="blinkCurrent-kacho-4.jpg" /></p1>
+      <p>3: How fast do you need to blink your LEDs until you no longer can tell that they are blinking? </p>
+      <p1> With my timer being 3ms, I am unable to tell that my lights are blinking. I found this out by
+        decreasing the timer in my code until I could no longer see the lights blinking. </p1>
+      <p>4: Did you use AI tools in completing this assignment? If yes, please provide details on how/when, 
         as well as a brief reflection. If no, you can either leave this question blank, or provide 
         other information if you'd like.</p>
+      <p1>I did not use AI in this assignment!</p1>
+    </div>
   </body>
 </html>
