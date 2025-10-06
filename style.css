@@ -82,3 +82,11 @@ p1 {
   margin-top: 0.5em;
   color:#000000;
 }
+
+pre {
+  background: #e4e4e4;
+  padding: 1em;
+  overflow-x: auto;
+  border-radius: 8px;
+  margin-top: 1em;
+}

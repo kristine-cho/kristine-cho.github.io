@@ -41,34 +41,36 @@
     </div>
     <div> 
       <h2> Code Snippet</h2>
-      <code>
+      <pre>
+        <code>
         // initializing a timer for 1 second
-int timer = 500; 
+        int timer = 500; 
 
-// the setup function runs once when you press reset or power the board
-void setup() {
-  // for loop initializing pins 10-12 as an output
-  for (int thisPin = 10; thisPin < 13; thisPin++){
-    // initializing thisPin as an output
-    pinMode(thisPin, OUTPUT);
-  }
-}
+        // the setup function runs once when you press reset or power the board
+        void setup() {
+          // for loop initializing pins 10-12 as an output
+          for (int thisPin = 10; thisPin < 13; thisPin++){
+            // initializing thisPin as an output
+            pinMode(thisPin, OUTPUT);
+          }
+        }
 
-// the loop function runs over and over again forever
-void loop() {
-  // forloop for turning each pin on and off from pin 10-12
-  for (int thisPin = 10; thisPin < 13; thisPin++) {
-    //turns on the LED by making the voltage high
-    digitalWrite(thisPin, HIGH);
-    //waits 1 second
-    delay(timer);
-    //turns off the LED by making the voltage low
-    digitalWrite(thisPin, LOW);
-    //waits 1 second
-    delay(timer);
-  }
-}
-      </code>
+        // the loop function runs over and over again forever
+        void loop() {
+          // forloop for turning each pin on and off from pin 10-12
+          for (int thisPin = 10; thisPin < 13; thisPin++) {
+            //turns on the LED by making the voltage high
+            digitalWrite(thisPin, HIGH);
+            //waits 1 second
+            delay(timer);
+            //turns off the LED by making the voltage low
+            digitalWrite(thisPin, LOW);
+            //waits 1 second
+            delay(timer);
+          }
+        }</code>
+      </pre>
+      
 
     </div>
     <div>
