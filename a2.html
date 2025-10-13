@@ -12,10 +12,153 @@
     <link href="style.css" rel="stylesheet" type="text/css" />
   </head>
   <body>
-    <h1>Kristine's Assignment 2!</h1>
+    <h1>Kristine's Assignment 2 - Fade</h1>
     <div class="header">
-      <img src="red-panda.jpg" />
-      <p>Here is all the documentation for assignment 2!</p>
+      <img src="fadeCircuit-kacho.png" />
+      <p>Circuit Image</p>
+      <p1>For this circuit, I wanted to go though the color wheel and showcase all the 
+        colors, but this is what I was able to accomplish. I used the push button to 
+        start the color changing sequence, which starts with a white light (all colors on), 
+        then fades the blue light, then the green light, and finally the red light, showing a 
+        small range of colors as they fade. 
+    </div>
+
+    <div class="header">
+      <img src="fadeCalc-kacho-1.jpg" />
+      <p>Calculations</p>
+      <p1>For this circuit, I used a 10kΩ resistor for the button because that was the reccomended
+        resistor size for the push buttons. I used a 100Ω resistor for the green and blue leds because on a 
+        datasheet I found for a similar product had them both at a forward voltage 
+        of 3.3V, though in class we grouped red, green and yellow LEDs together. Since the 
+        green and blue LEDs have a higher forward voltage, they will require a lower 
+        resistance to allow enough current to pass through them. I used a 220Ω resistor 
+        for the red LED because it has a lower forward voltage, so it will require a 
+        higher resistance to limit the current going through it. 
+    </div>
+
+    <div class="header">
+      <img src="fadeSchematic-kacho-2.jpg" />
+      <p>Schematic Image</p>
+      <p1> For the schematic, I chose to add all the pins at the top and to connect the grounds all together
+        at the bottom to make it look cleaner and neater. I also labeled the pins to make it easier 
+        to understand which pin is connected to which component. I made the schematic shorthand 
+        to show the circuit clearly and simply.
+      </p1>
+    </div>
+      
+    <div class="header">
+      <img src="fade-kacho.gif" />
+      <p>Circuit Operation Gif</p>
+      <p1> I used 1 RGB LED, a push button, and the Arduino to make a circuit that changed colors.
+        When the button is pressed, the LED looks white beacuse all compoenents of the RGB are lit up.
+        Then it fades the colors of the LED one by one, starting with blue, then green, and finally red. 
+        We can see this order because we can see the color go from white(showing all 3 are present) to a yellowish
+        color to a yellow/green color to a orange color to a bright red to a dim red, showing the 6 stages of
+        the 3 colors fading. The fading is done by using the analogWrite function to change the 
+        brightness of each color compotnent to 25% brightness, pauses for a second, and then turns off fully. 
+      </p1>
+    </div>
+
+    <div>
+      <h2> Code Snippet</h2>
+      <pre>
+        <code>
+          // constant value for push button's pin
+          const int buttonPin = 2;
+          // counter for number of button presses
+          int buttonPushCount = 0;
+          // value for reading the push button status
+          int buttonState = 0;
+          // value for the amount of fade
+          int fadeAmount = 64;
+
+          void setup() {
+            // initializing button pin (pin 2) as input
+            pinMode(buttonPin, INPUT);
+            // initializing pins 9-11 as an output
+            pinMode(9, OUTPUT);
+            pinMode(10, OUTPUT);
+            pinMode(11, OUTPUT);
+            // initialize serial communication (this is from class slides)
+            Serial.begin(9600);
+          }
+
+          void loop() {
+            // reads the state of the push button value
+            buttonState = digitalRead(buttonPin);
+            // if statement for if the button is pressed, it will do 
+            // the code written in the statement
+            if (buttonState == HIGH) {
+              // adds one to the value of buttonPushCount
+              buttonPushCount++;
+              // turns on the red aspect of the white lightbulb
+              digitalWrite(9, HIGH);
+              // turns on the green aspect of the white lightbulb
+              digitalWrite(10, HIGH);
+              // turns on the blue aspect of the white lightbulb
+              digitalWrite(11, HIGH);
+              // delays the changing of the lights for visual aspect
+              delay(500);
+              // for loop, going through pins 9-11 backwards
+              for (int i = 12; i >= 9; i--) {
+                // fades the current i valued pin by the fadeAmount(5)
+                analogWrite(i, fadeAmount);
+                // delays the changing of the lights for visual aspect
+                delay(1000);
+                // turnes the current i valued pin totally off
+                digitalWrite(i, LOW);
+                // delays the changing of the lights for visual aspect
+                delay(1000);
+              }
+            }
+          }</code>
+      </pre>
+    </div>
+
+    <div>
+      <h2>Questions</h2>
+      <p>1: Draw a chart where the X axis is time and 
+        the Y axis is voltage. Draw 3 lines representing 
+        the voltage across an LED with analogWrite(led, 64),
+         analogWrite(led, 128), and analogWrite(led, 255).</p>
+      <p1>I think this is how the graph would look like. The yellow line
+        is constantly at 1.8V beacuse the LED would be consistenyly on, at full
+        brightness. The blue line, being a 50% duty cycle, woudl be at 1.8V for half
+        the time as it is off 50% of the time, showing a dimmer light. The red line
+        would be at 1.8V for 1 second, a quarter of the time, as its duty cycle is 25%,
+        showing an even dimmer line.
+      </p1>
+      <img src="fadeGraph-kacho-3.jpg" />
+      <p>2: Given your schematic, circuit, and firmware, 
+        assuming the only thing that draws current is 
+        your LEDs, how long would your circuit run if 
+        powered by a 1200 mAh battery?</p>
+      <p1>I think my circuit would last 25.1 hours. This is because if we calculate how much
+        current the green and blue LEDs would draw using Ohm's law, we get 17mA. For the 
+        red LED, we get 13.8mA. Since I have 1 of each color, I can add them together to get a 
+        total of 47.8mA for the whole circuit. then if we divide the battery by the total circuit
+        current, we get 25.1 hours.
+      </p1>
+      <img src="fadeMath-kacho-4.jpg" />
+      <p>3: Measure and record the actual voltage across 
+        one of your LEDs when it's on. How does this 
+        compare to the theoretical forward voltage for 
+        your LED color?</p>
+      <p1> From the datasheet I found for a similar product, I was 
+        expecting to see a forward voltage of around 1.95V for the LED
+        I was measuring, which was the red LED from the RGB LED. When I measured the 
+        voltage, I saw the voltage of around 2.25V, which is a lot more
+        than I expected. The behavior of the voltage remaining consistent for most the time
+         and the big drop towards end were expected. The circuit should 
+         keep the red LED on till it dims to 25% brightness and then turns off fully.
+      </p1>
+      <img src="fadeMultimeter.gif" />
+      <p>4: Did you use AI tools in completing this 
+        assignment? If yes, please provide details 
+        on how/when, as well as a brief reflection. 
+        If no, you can either leave this question blank, 
+        or provide other information if you'd like.</p>
+      <p1> N/A </p1>
     </div>
   </body>
 </html>
