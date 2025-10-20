@@ -14,37 +14,113 @@
   <body>
     <h1>Kristine's Assignment 3 - Sensor</h1>
     <div class="header">
-      <img src="blinkCircuit.png" />
+      <img src="inputCircuit.png" />
       <p>Circuit Image</p>
-      <p1>The
+      <p1>The circuit uses a photoresistor that detects how much light
+        is being shined onto it and changes the color and brightness of the RGB 
+        LED depending on the amount of light detected. When the mappedValue 
+        is above 100, the RGB LED shows a white light, brightness depending on the 
+        mappedValue, When the mappedValue is between 20-100, the RGB LED shows a blue light,
+        brightness depending on the mappedValue, and when the mappedValue is below 20,
+        the RGB LED shows a red light, brightness depending on the mappedValue.
         </p1>
     </div>
 
     <div class="header">
-      <img src="fadeCalc-kacho-1.jpg" />
+      <img src="inputCalc-kacho-1.jpg" />
       <p>Calculations</p>
-      <p1>For this circuit, 
+      <p1>For this circuit, I decided to use a 12kΩ resistor for the photoresistor's
+        voltage divider pair because when I tested the photoresistor with a multimeter,
+        the values of full light vs no light were between 4kΩ to around 70kΩ. Seeing this range,
+        the closest resistor value I had to the middle was 12kΩ. For the LED resistors, I used 
+        220Ω for the red and green LEDs and 100Ω for the blue LEDs.
     </div>
 
     <div class="header">
-      <img src="blinkSchematic-kacho-1.jpg" />
+      <img src="inputSchematic-kacho-2.jpg" />
       <p>Schematic</p>
-      <p1> I made the schematics
+      <p1> For the schematic, I put all the pins at the top, labeling them with their respective 
+        components to make it easier to understand at a glace. I also grouped all the 
+        grounds together at the bottome to make it more organized and neater. I also used the resistor
+        symbol I found on the internet because I could not remember what the resistor symbol we were shown 
+        in class looked like.
       </p1>
     </div>
 
     <div class="header">
-      <img src="blink-kacho.gif" />
+      <img src="input-kacho.gif" />
       <p>Circuit's Operation gif</p>
-      <p1> I used </p1>
+      <p1> I used a photoresistor, the RGB LED, and a volatage divider to create this system. This system
+        detects how much light is being shined onto the photoresistor and changes the color and brightness of the RGB 
+        LED depending on the amount of light detected. Shown in the gif, I first cover the photoresistor with a piece of 
+        paper, to dim the white light, then with my finger, making the light blue, then pinching the photoresistor, 
+        making the light red.
+      </p1>
     </div>
 
     <div> 
       <h2> Code Snippet</h2>
       <pre>
         <code>
-         kduhgosjr
-        </code>
+          // initializes pin A0 as the analog pin
+          const int analogPin = A0;
+          // initializes pin 11 as the pin for the blue aspect of the rgb LED
+          const int bluePin = 11;
+          // initializes pin 10 as the pin for the green aspect of the rgb LED
+          const int greenPin = 10;
+          // initializes pin 9 as the pin for the red aspect of the rgb LED
+          const int redPin = 9;
+          // initializes sensor value 
+          int sensorValue;
+          // initializes mapped value
+          int mappedValue;
+
+          void setup() {
+            // males the analogPin an input
+            pinMode(analogPin, INPUT);
+            // makes all the LED pins outputs
+            pinMode(bluePin, OUTPUT);
+            pinMode(greenPin, OUTPUT);
+            pinMode(redPin, OUTPUT);
+            // how often the arduio communicates with serial(computer)
+            Serial.begin(9600);
+          }
+
+          void loop() {
+            // makes sensorValue equal to what analogPin is receiving
+            sensorValue = analogRead(analogPin);
+            // adding a constrain to the sensorValue between 50 and 400
+            sensorValue=constrain(sensorValue, 50, 400);
+            // printing the sensorValue with a label
+            Serial.print("Sensor Value: ");
+            Serial.print(sensorValue);
+
+            // makes sensorValue that is within the range 50-400 value 
+            //    to the target range of 0-255
+            mappedValue = map(sensorValue, 50, 400, 0, 255);
+            // printing the mappedValue with a label
+            Serial.print("\t Mapped Value: ");
+            Serial.println(mappedValue);
+            // if the mapped value is above 100, sets all the pins to the mapped value,
+            // showing a white light, brightness depending on the the mappedValue
+            if (mappedValue > 100) {
+              analogWrite(9, mappedValue);
+              analogWrite(10, mappedValue);
+              analogWrite(11, mappedValue);
+            // if the mappedValue is between 20-100, turns off pins 9 and 10
+            // showing a blue light, brightness depending on the the mappedValue
+            } else if (mappedValue > 20) {
+              analogWrite(11, mappedValue);
+              digitalWrite(10, LOW);
+              digitalWrite(9, LOW);
+            // if the mappedValue is below 20, turns off pins 10 and 11
+            // showing a red light, brightness depending on the the mappedValue
+            } else {
+              analogWrite(9, mappedValue);
+              digitalWrite(10, LOW);
+              digitalWrite(11, LOW);
+            }
+          }</code>
       </pre>
       
 
@@ -54,19 +130,36 @@
       <p>1: In your voltage divider, can the variable resistor be either 
         R1 or R2 or does it need to be one or the other? Justify your 
         answer with example calculations.</p>
-      <p1>I 
+      <p1>I think the variable resistor cannot be either R1 or R1, but 
+        always has to be R1. from the equation derived from V=IR,
+        Vout = Vin*(R2/(R1+R2)), R2 is in multiple places, meaning if it was the one
+        changing, it would affect the equation in multiple ways, whereas R1 is only 
+        in one place. From a mathmatical standpoint, since R1 and R2 will affect the 
+        equations outcome differently, they are not interchangeable.
       </p1>
-      <img src="fadeGraph-kacho-3.jpg" />
+      <img src="inputMath-kacho-3.jpg" />
       <p>2: Draw a graph where the x-axis is time and the y-axis is 
         voltage. Plot the voltage at V-measure of your voltage divider 
-        of your shared gif.</p>
-      <p1>I
+        of your shared gif.</p> 
+      <p1>I think the graph would look like this. Since the photoresistor's resistance
+        changes depending on how much light is being shined on it, if light increases, 
+        resistacnce decreases, which means voltage increases. So when the gif starts and ends
+        and between covering the photoresistor with different things, the voltage would be the highest,
+        at 5. Then when covering with paper, it should drop a little, then a little more when covering
+        with my finger, and then the lowest when pinching the photoresistor, as that blocks the most light.
       </p1>
-      <img src="fadeMath-kacho-4.jpg" />
+      <img src="inputGraph-kacho-4.jpg" />
       <p>3: AnalogWrite and analogRead are respectively 8-bit and 10-bit values.
          Imagine you had 10-bit PWM and a 16-bit analog-to-digital converter instead. 
          How would this change your map() code? Explain your answer.</p>
-      <p1> From 
+      <p1> Yes, we would have to change the map() code to reflect the new ranges of the 
+        10-bit and 16-bit values. For the 8-bit and 10-bit ranges, we would have to code
+        map(sensorValue, 0, 225, 0, 1023), but since 16-bit values range from 0-65535. 
+        This is because the first parameter would be the sensorValue, the next two 
+        parameters represent the range of the input value, which is now 10-bit. 
+        The last two parameters represent the range of the target value, 
+        which is now 16-bit. The new map() code would be map(sensorValue, 0, 1023, 0, 65535). 
+        the 16-bit range is from 0-65535 because 2^16 is 65536 and since we start at 0, so we minus 1.
       </p1>
     </div>
   </body>
