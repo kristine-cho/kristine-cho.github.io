@@ -16,27 +16,50 @@
     <div class="header">
       <img src="libraryCircuit.png" />
       <p>Circuit Image</p>
-      <p1>The 
+      <p1>This circuuit consists of a water sensor, an LCD screen, and a serco motor. The water 
+        sensor detects the water level, and depending on the water level, the lcd screen displays 
+        the words, "Empty", "Low", "Medium", or "High" to indicate the water level. The servo motor 
+        also moves to a different angle depending on the water level, with 0 degrees being empty,
+        60 degrees being low, 120 degrees being medium, and 180 degrees being high. 
         </p1>
     </div>
 
     <div class="header">
-      <img src="libraryCalc-kacho-1.jpg" />
+      <img src="red-panda.jpg" />
       <p>Calculations</p>
-      <p1>For 
+      <p1>For this circuit, I did not need to use a resistor but I did use a potentiometer. I
+         used the potentiometer to adjust the contrast of the lcd screen to make the text more 
+         visible according to my preference, therefore did not need to calculate anything, hence the red panda!
+         And although my code does use "analogRead", I did not add a way to calibrate my 
+         sensor since I did not know how to calibrate the water... I tried Google-ing how to 
+         calibrate a water sensor but I could not find anything useful. I do think that a 
+         calibration would be helpful in many cases for the water sensor, since different water
+         can cave different amount of minerals and other substances that can affect the sensor reading.
+         So having a calibration step to adjust for different types of water would be useful, but I was unable 
+         to impliment it in my code.
     </div>
 
     <div class="header">
-      <img src="librarySchematic-kacho-2.jpg" />
+      <img src="librarySchematic-kacho-1.jpg" />
       <p>Schematic</p>
-      <p1> For 
+      <p1> For the schematic, I put all the pins at the top, labeling them with their respective 
+        components to make it easier to understand at a glace. I drew the servo motor as a circle with an "M",
+        the water sensor as a rectangle with a "W", and the LCD as a rectagle with "LCD" because I could not
+         find the symbols online. Thought the LCD is connected to ground with 3 different pins, I chose not to
+         show this in the diagram to make it less cluttered and easier to read. The resistor symbol in the 
+         diagram represents the potentiometer used to adjust the contrast of the lcd screen.
       </p1>
     </div>
 
     <div class="header">
       <img src="library-kacho.gif" />
       <p>Circuit's Operation gif</p>
-      <p1> I 
+      <p1> This circuit uses a water sensor to detect the water level and display it on an lcd screen
+        as well as move a servo motor to different angles depending on the water level. As shown in the gif,
+        when there is no water, the lcd screen displays "Empty" and the servo motor is at 0 degrees. 
+        When there is a low amount of water, the lcd screen displays "Low" and the servo motor moves to 60 degrees.
+        When there is a medium amount of water, the lcd screen displays "Medium" and the servo motor moves to 120 degrees.
+        Finally, when there is a high amount of water, the lcd screen displays "High" and the servo motor moves to 180 degrees. 
       </p1>
     </div>
 
@@ -44,8 +67,57 @@
       <h2> Code Snippet</h2>
       <pre>
         <code>
-         
-        </code>
+          // imports servo library for servo motor
+          #include <Servo.h>
+          // identifies serco library as servo
+          Servo servo;
+          // initiallizes the variable angle as zero
+          int angle = 0;
+          // imports LiquidCrystal library for screen
+          #include <LiquidCrystal.h>
+          // identifies what pins the lcd screen is connected to
+          LiquidCrystal lcd(12, 11, 5, 4, 3, 2);
+
+          // creates integer resval
+          int resval = 0;
+          // creates integer for the water sensor pin
+          int respin = A0;
+
+          void setup() {
+            // initializes the servo motor to pin 9
+            servo.attach(9);
+            // sets up where the lcd's number of columns and rows
+            lcd.begin(16, 2);
+            // prints the message to the lcd
+            lcd.print("water level: ");
+          }
+
+          void loop() {
+            // sets the cursor 
+            lcd.setCursor(0, 1);
+            // reads data from analog pin from water sensor and makes resval
+            // equal to received data
+            resval = analogRead(respin);
+
+            // depending on what the value is, it changes the text on the 
+            // lcd and the angle of the servo motor
+            if (resval<=100){
+              lcd.println("Empty            ");
+              servo.write(0);
+            } else if (resval > 100 && resval <= 200){
+              servo.write(60);
+              lcd.println("Low              ");
+            } else if (resval > 200 && resval <= 240){
+              servo.write(120);
+              lcd.println("Medium               ");
+            } else if (resval > 240){
+              servo.write(180);
+              lcd.println("High               ");
+            }
+            // delays each read so there is not an overload
+            // of data
+            delay(1000);
+          }</code>
       </pre>
       
 
@@ -62,19 +134,49 @@
         &emsp;}<br>
         }   <br>
         Draw a graph with the x-axis as time and the y-axis as voltage at pin 9 with respect to ground.</p>
-      <p1>I
+      <p1>I drew a simplified version of what this graph would actually look like. In the code snippet, we see
+        that the servo motor is moving from 0-180 degrees every 100ms, which would take a long time to fully draw
+        out each incrimental change. Therefore, I drew a simplified version where the width of the pulse is smallest
+        when it start, and would gradually get wider as time goes on and the angle increases. The width of the pulse 
+        would initially be 1ms then gradually increase to the final width of 2ms when the servo reaches 180 degrees.
+        The website that I used to better understand how servo motors work(URL in the AI section) said the pulse width
+        range was from .5ms to 2.5ms, but since in our class slides we have our range from 1ms to 2ms, I used that for my explanation.
       </p1>
-      <img src="libraryMath-kacho-3.jpg" />
+      <img src="libraryGraph-kacho-2.png" />
       <p>2: Your input device is slightly broken, leading it to give 
         us an erroneous reading 1% of the time. How can we address this? 
         Answer in (pseudo)code.</p> 
-      <p1>I 
+      <p1>I think we could address this issue by averaging 10 readings to minimize the affect of the 1% of erroneous 
+        readings. In pseudocode, it would look something like this:<br>
+        initialize a sum variable <br>
+        initalize a counter variable  <br>
+        for counter from 1-10:<br>
+          add input value to sum variable<br>
+          divide sum variable by 10<br>
+        the new output would be the averaged value
       </p1>
-      <img src="libraryGraph-kacho-4.jpg" />
       <p>3: Your input device is slightly noisy, leading the measurement 
         to randomly deviate from the true measurement up or down by 10%. 
         How can we address this? Answer in (pseudo)code.</p>
-      <p1> Yes
+      <p1> I think we could address this issue by doing similarly to the previous question, by averaging 
+        100 readings to minimize the affect of the 10% of erroneous readings. In pseudocode, 
+        it would look something like this:<br>
+        initialize a sum variable <br>
+        initalize a counter variable  <br>
+        for counter from 1-100:<br>
+          add input value to sum variable<br>
+          divide sum variable by 100<br>
+        the new output would be the averaged value</p1>
+      <p>4: Did you use AI tools in completing this assignment? If yes, please provide 
+      details on how/when, as well as a brief reflection. If you used an LLM, 
+      please 'share' your conversation and include it as part of your submission, 
+      or cite the prompt(s) you used and the output. If no, you can either leave this 
+      question blank, or provide other information if you'd like.</p>
+      <p1>I did not use AI, but I did use https://www.jameco.com/Jameco/workshop/Howitworks/how-servo-motors-work.html?srsltid=AfmBOorZGjDZc9OJg0bESMkoeobDDNL2AWGiWnzalK0u2fiaKi6m6IFN
+        to better understand how servo motors work while working on the first question. With
+        this website I was able to better understand how servo motors function and how the pulses
+        relate to the movement we see in the servo motor. To find this website, I searched,
+        "how do servo motors work" on Google.
       </p1>
     </div>
   </body>
