@@ -12,31 +12,46 @@
     <link href="style.css" rel="stylesheet" type="text/css" />
   </head>
   <body>
-    <h1>Kristine's Assignment 4 - Libraries</h1>
+    <h1>Kristine's Assignment 5 - Higher Voltage and Transistor</h1>
     <div class="header">
-      <img src="voltageCircuit.png" />
+      <img src="highervCircuit.png" />
       <p>Circuit Image</p>
-      <p1>This 
+      <p1>This circuit consists of an ultrasonic sensor and an LED strip
+         connected through an n-mosfet transistor. Depending on the distance
+          detected by the ultrasonic sensor, the brightness of the 
+          LED strip changes, with closer distance resulting in a dimmer light.
         </p1>
     </div>
 
     <div class="header">
-      <img src="red-panda.jpg" />
+      <img src="higherVcalc-kacho-4.jpg" />
       <p>Calculations</p>
-      <p1>For
+      <p1>For the circuit, I think I am using 9V/1A of power and current. I think this because the 
+        external power supply I a using can only provide up to 9V/1A of power. The LED strip I am using 
+        says it can handle up to 12V/1.5A of power, so seeing that the power supply is providing less than
+         that, I think the LED strip will use all that is given but being a bit dimmer than if it was receiving
+         as much as it could take. Since the maximum current for the diode body is 80A of current, I think the 
+         circuit is safe since I am only using 1A of current, which is much lower than 80A.
     </div>
 
     <div class="header">
-      <img src="voltageSchematic-kacho-1.jpg" />
+      <img src="higherVschematic-kacho-1.jpg" />
       <p>Schematic</p>
-      <p1> For 
+      <p1> For the schematic, I drew the ultrasonic sensor and the LED strip section as 2 different 
+        schematics. This is because though they are connected together though ground and pins, I think 
+        them as 2 dfferent circuits since they both have very different functions. While the ultrasonic 
+        sensor is used to detect distance, it sends information to the arduino and the arduino controls
+         the led strip's brightness, which is connected to power through an external power supply. 
       </p1>
     </div>
 
     <div class="header">
-      <img src="voltage-kacho.gif" />
+      <img src="higherV-kacho.gif" />
       <p>Circuit's Operation gif</p>
-      <p1> This 
+      <p1> This circuit uses an ultrasonic sensor and a library to read the distance
+        detected by the sensor. Depending on the distance, from 5, 10, 15 cm or more, the
+        brightness of the LED strip changes from incriments of 50. The closer the object is to 
+        the sensor, the dimmer the light appears. 
       </p1>
     </div>
 
@@ -44,34 +59,106 @@
       <h2> Code Snippet</h2>
       <pre>
         <code>
-         
-        </code>
+        // library for the ultrasonic sensor
+        #include Ultrasonic.h 
+        // initializes ultrasonic and its echo and trig pins
+        Ultrasonic ultrasonic(3, 2);
+        // initialises integer for holding distance
+        int distance;
+        // initialises integer for changing the brightness
+        int brightness;
+
+        void setup() {
+          // sets pin 5 as an output, its current state would 
+          // not be receiving anything yet until it is called 
+          // later during the loop()
+          pinMode(5,OUTPUT);
+        }
+
+        void loop() {
+          // sets the distance integer as the value received from
+          // the ultrasonic sensor using the library's read property
+          distance = ultrasonic.read();
+          // changes the brightness of the LED strip depending on the 
+          // distance received from the ultrasonic sensor
+          if (distance <= 5) {
+            // sets the brightness to 50 if conditions are met
+            brightness = 50;
+            // sends info to pin 5 and changes to adjusted brightness
+            analogWrite(5,brightness);
+          } else if (distance <= 10) {
+            brightness = 100;
+            analogWrite(5,brightness);
+          } else if (distance <= 15) {
+            brightness = 150;
+            analogWrite(5,brightness);
+          } else {
+            brightness = 200;
+            analogWrite(5,brightness);
+          }
+        }</code>
       </pre>
       
-
     </div>
     <div>
       <h2> Questions</h2>
       <p>1: This is the datasheet for the n-mosfet transistor: https://www.diodes.com/assets/Datasheets/DMT6009LCT.pdfLinks 
         to an external site.f What is the absolute maximum amount of current between pins 2 and 3?</p>
-      <p1>chichekn nugget</p1>
-      <img src="voltageGraph-kacho-2.png" />
+      <p1>According to the datasheet, I think the maximum amount of current between pin 2 and 3
+        would be around 80A. This is because in the maximum ratings table, the max body diode forward current
+        is 80A with the drain source voltage maximum is 60V.
+      </p1>
+
       <p>2: Draw a schematic for a circuit with using at least your arduino, a DC motor, a flyback diode, 
         and capacitors between power and ground. Find parts with datasheets you could use for each of these 
         schematic components.</p> 
-      <p1>chichekn nugget
+      <p1>In this schematic, I have the pin at the top to be the arduino, the motor and capasitor in the middle,
+         and the flyback diode around the motor and capasitor. This is because when the motor is turned off, 
+         the flyback diode protects the circuit from voltage spikes that may occur while the motor is 
+         trying to dissipate the remaining energy due to the magnetic field. The motor would be a DC motor,
+          the flyback diode would be the IN4007 diode, DO-204AL, and the capacitor could be the PT01-D120K2-B103
+          potentiometer. I chose these parts because they all have datasheets and are easily accessible and
+          can be found in our kits. 
       </p1>
+      <img src="higherVschem-kacho-2.jpg" />
+
       <p>3: Here is the datasheet for the L293D chip: https://www.ti.com/product/L293DLinks 
         to an external site.. Draw a schematic using at least your arduino, this chip, and 
         two motors. Write (pseudo) code that shows how you would move the motors both forward, 
         both back, then one forward one back, and one back then forward.</p>
-      <p1> chichekn nugget</p1>
-      <p>4: Did you use AI tools in completing this assignment? If yes, please provide 
-      details on how/when, as well as a brief reflection. If you used an LLM, 
-      please 'share' your conversation and include it as part of your submission, 
-      or cite the prompt(s) you used and the output. If no, you can either leave this 
-      question blank, or provide other information if you'd like.</p>
-      <p1>I did 
+      <p1>In this schematic, we can see that pins 10, 11, 5 and 6 are used. Pins 10 and 11 would be controlling
+        the movement of one motor, while pins 5 and 6 would be controlling the movement of the other motor.<br> 
+        Pseudo codeo move the motors both forward:<br>
+        set pin 10 to high<br>
+        set pin 11 to low<br>
+        set pin 6 to high<br>
+        set pin 5 to low<br>
+        Pseudo codeo move the motors both backwards:<br>
+        set pin 10 to low<br>
+        set pin 11 to high<br>
+        set pin 6 to low<br>
+        set pin 5 to high<br>
+        Pseudo codeo move one forward one back:<br>
+        set pin 10 to high<br>
+        set pin 11 to low<br>
+        set pin 6 to low<br>
+        set pin 5 to high<br>
+        Pseudo codeo move one back then forward:<br>
+        set pin 10 to low<br>
+        set pin 11 to high<br>
+        add a delay<br>
+        set pin 10 to high<br>
+        set pin 11 to low<br>
+        add a delay<br>
+      </p1>
+      <img src="higherVchip-kacho-3.jpg" />
+
+      <p>4: Did you use AI tools in completing this assignment? If yes, please provide details 
+        on how/when, as well as a brief reflection. If you used an LLM, please 'share' your 
+        conversation and include it as part of your submission, or cite the prompt(s) you used 
+        and the output. If no, you can either leave this question blank, or provide other 
+        information if you'd like.</p>
+        <p1>N/A</p1>
     </div>
   </body>
 </html>
