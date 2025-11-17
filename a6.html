@@ -1,0 +1,366 @@
+<!DOCTYPE html>
+<html>
+  <header>
+    <button onclick="history.back()">Back</button>
+  </header>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, maximum-scale=1.0" />
+
+    <title>Kristine's HCDE 439 Physical Computing Page!</title>
+
+    <link href="style.css" rel="stylesheet" type="text/css" />
+  </head>
+  <body>
+    <h1>Kristine's Assignment 6 - Talking to the WEB</h1>
+    <div class="header">
+      <img src="web-kacho.png" />
+      <p>Circuit Image</p>
+      <p1>This circuit contains an ultrasonic sensor, an 8x8 led module, and a joystick.
+        the 8x8 led module is used as an doodle board that changes size depending on the
+        users selection on the web interface. Using the distance from the ultrasonic sensor,
+        users can clear the doodle board and being it back it its original size. The joystikc
+        is used to control where the user is doogling on the led module. The sizes of the doodle
+        board include 8x8, 6x6, 4x4, and 2x2. 
+        </p1>
+    </div>
+
+    <div class="header">
+      <img src="red-panda.jpg" />
+      <p>Calculations</p>
+      <p1>For many of the .read() values I used from the ultrasonic sensor and joystick were 
+        calculated with the help of the libraries provided. For converting the joystick values
+        to the corresponding led module row and column, I used the mapping function, so I personally
+        did not need to do any calculations for that either. Overall, I was able to do many of the 
+        calculations with the help of libraries and functions already provided which was pretty cool
+        since I would have not been able to do that prior to taking this course. 
+    </div>
+
+    <div class="header">
+      <img src="webSchematic-kacho-1.jpg" />
+      <p>Schematic</p>
+      <p1> All 3 major components I used for this complex circuit were connected to the
+        groud and v5 pin, but to make the drawing more clear, I decided to draw them seperately.
+        The 8x8 led module had 3 other pins, using pins 10, 11, and 12 on the arduino. The joystick
+        used 2 analog pins, A3 and A4. The ultrasonic sensor used pins 5 and 6. The schematic shows 
+        a very simple view of how the components are connected to the arduino, but the actual circuit
+        was a lot messier with wires going everywhere. I chose to connect all the components to the 
+        same V5 pin because they all do not require a lot of power to operate. 
+      </p1>
+    </div>
+
+    <div class="header">
+      <img src="red-panda.jpg" />
+      
+     <a href="https://youtube.com/shorts/TgjRIIxvGms"><p>Circuit's Operation Video</p></a>
+      <p1> This circuit shows the use of the doodle board without web connection, then with
+        web connection. I show how users can cahnge the size of the doodle board and reset it 
+        with a wave of the hand over the ultrasonic sensor. A stretch goal I tried but failed 
+        to impliment was to have a limit value the user can set on the web page, so they can 
+        customize how close they need to be to the ultrasonic sensor to reset the doodle board.
+        if the hyperlink does not work: https://youtube.com/shorts/TgjRIIxvGms
+    </p1>
+    </div>
+
+    <div> 
+      <h2>Arduino Code Snippet</h2>
+      <pre>
+        <code>
+        // adding ultrasonic library
+        #include &lt;Ultrasonic.h>
+        // definding which pins are used for ultrasonic sensor
+        Ultrasonic ultrasonic(6, 5);
+        // intitialized varaiable for distance as gabagoop (naming choice
+        // declined due to lack of sleep)
+        int gabagoop;
+        // initliaized variable for limit as 10, stretch goal would 
+        // be to be able to change the limit on the webpage
+        int limit = 10;
+        // adding the 8x8 led module library
+        #include &lt;LedControl.h>
+        // initialized constant variables for the different 
+        // 8x8 led module pins into arduino
+        const int DIN =12;
+        const int CS =11;
+        const int CLK = 10;
+        // defining which pins are used for 8x8 led module and 1 means
+        // there is only one module connected
+        LedControl lc = LedControl(DIN, CLK, CS,1);
+        // defining which pin is used for the joystick x axis
+        const int XPin = A3;
+        // defining which pin is used for the joystick y axis
+        const int YPin = A4;
+        // creating holder values for mapping
+        int UD = 0;
+        int LR = 0; 
+        // creating variable for holding size 
+        int size;
+
+        void setup() {
+            // sets baud rate as 9600
+            Serial.begin(9600);
+            // auto for 8x8 is to be off, so making sure its not 
+            // on sleeping mode
+            lc.shutdown(0,false);
+            // making the leds the lowest brightness (ouch my eyes)
+            lc.setIntensity(0,1);
+            // making sure we start with a clean board
+            lc.clearDisplay(0); 
+        }
+
+        // function to make the 8x8 board "smaller"
+        // takes in an interger which will affect the 
+        // size of the 8x8 board
+        void smallinator(int val) {
+            // nested for loop changing the column and row 
+            for (int j = 0; j &lt; val; j++) {
+                // nested for loop changing the row and column
+                for (int i = 0;i&lt;8;i++) {
+                    lc.setLed(0,i,j,true);
+                    lc.setLed(0,j,i,true);
+                }
+            }
+        }
+
+
+        void loop() {
+            // reads the ultrasonic sensor input and then makes gabagoop equal to it
+            gabagoop = ultrasonic.read();
+            // prints distance in serial monitor
+            Serial.println(gabagoop);
+            // delays for .1 sec
+            delay(100);
+            // update holder value for joystick x axis
+            UD = analogRead(XPin);
+            // update holder value for joystick y axis
+            LR = analogRead(YPin);
+            // inilitializes characters for the mapped val of x
+            char x_translate = map(LR, 1021, 0, 7, 0);
+            // inilitializes characters for the mapped val of y
+            char y_translate = map(UD, 0, 1021, 0, 7);
+
+            // if information coming from webpage, will be able to doodle on diff
+            // size pages, if not, will only be able to draw on 8x8 size
+            if (Serial.available() > 0) {
+                // updates size variable to the current size being read from webpage
+                size = Serial.read();
+                // turns on led depending on where the joystick location is
+                lc.setLed(0,x_translate,y_translate,true);
+                // if distance is less that limit value, will clear the doodle page
+                // else, lets user doodle on different siezpages depending on what 
+                // they choose on the webpage
+                if (gabagoop &lt;= limit) {
+                    // clears doodle page
+                    lc.clearDisplay(0);
+                } else {
+                    // normal 8x8 size
+                    if (size == 8) {
+                        // makes sure doodle page is clear
+                        lc.clearDisplay(0);
+                        // 6x6 doogle size
+                    } else if (size == 6) {
+                        // makes sure doodle page is clear
+                        lc.clearDisplay(0);
+                        // function call shrinking the page size,
+                        // removing 2 rows and columns 
+                        smallinator(2);
+                        // 4x4 doogle size
+                    } else if (size == 4) {
+                       // makes sure doodle page is clear
+                        lc.clearDisplay(0);
+                        // function call shrinking the page size,
+                        // removing 4 rows and columns 
+                        smallinator(4);
+                        // 2x2 doogle size
+                    } else if (size == 2) {
+                        // makes sure doodle page is clear
+                        lc.clearDisplay(0);
+                        // function call shrinking the page size,
+                        // removing 6 rows and columns 
+                        smallinator(6);
+                    }
+                }
+            } else {
+                // lets user doodle on 8x8 size, even without webpage
+                lc.setLed(0,x_translate,y_translate,true);
+                // clears doogle page if distance from ultrasonic 
+                // sensor is less than the limit value
+                if (gabagoop &lt;= limit) {
+                    // clears doodle page
+                    lc.clearDisplay(0);
+                } 
+            }
+        }</code>
+      </pre>
+    </div>
+    <div> 
+      <h2>p5.js Code Snippet</h2>
+      <pre>
+        <code>
+        // setting baud rate for serial communication
+        const BAUD_RATE = 9600;
+        // created variables prot and connectBtn 
+        let port, connectBtn;
+        // created variable to hold size selection
+        let sizer = 8;
+        // created variable to hold last size sent
+        let lastSizer;
+        // created variable to hold distance data
+        let dist;
+
+        // fuction sets up the p5 page
+        function setup() {
+            // runs serial setup function
+            setupSerial(); 
+
+            // creates cacnvas the size of the window
+            createCanvas(windowWidth, windowHeight);
+
+            // p5 text settings, font verdana, size 50, bold, center aligned 
+            textFont("Verdana", 50);
+            textStyle(BOLD);
+            textAlign(CENTER, CENTER);
+            // function thta makes dropdown menu
+            makeSize();
+        }
+
+        // function that runs in a loop that draws the p5 page
+        function draw() {
+            // sets the sizer variable to the corresponding value
+            btnData();
+            // collects data from arduino
+            receiveData(); 
+            // sends data to arduino
+            sendData(); 
+            // displays distance info and changes sizer if distance &lt; 10
+            drawInfo(dist);
+        }
+
+        // function that makes dropdown menu for size selection
+        function makeSize() {
+            // Create a dropdown
+            mySelect = createSelect();
+            // location for dropdown menu
+            mySelect.position(windowWidth/2, windowHeight/2);
+
+            // adding size options
+            mySelect.option('8 X 8');
+            mySelect.option('6 X 6');
+            mySelect.option('4 X 4');
+            mySelect.option('2 X 2');
+        }
+
+        // function that sets sizer variable based on dropdown selection
+        function btnData() {
+            // collect selected value
+            let s = mySelect.selected();
+            // set sizer variable based on selection
+            if (s === '8 X 8') {
+                sizer = 8;
+            } else if (s === '6 X 6') {
+                sizer = 6;
+            } else if (s === '4 X 4') {
+                sizer = 4;
+            } else if (s === '2 X 2') {
+                sizer = 2;
+            }
+        }
+
+        // function that receives data from arduino
+        function receiveData() {
+            // checks if port is open
+            const portIsOpen = checkPort();
+            // if not open, exit function
+            if (!portIsOpen) return;
+
+            // reads from port till new line
+            let str = port.readUntil("\n"); 
+            // is there is nothing, exit function
+            if (str.length == 0) return;
+
+            // trim the whitespace and convert the string to a number
+            dist = Number(str.trim());
+        }
+
+        // function that draws distance info and resets sizer if distance &lt; 10
+        function drawInfo(d) {
+            // makes the text white
+            fill("white");
+            // changes text size t 100
+            textSize(100);
+            // displays distance info
+            text("Distance: " + d + " cm", windowWidth / 2, windowHeight / 4);
+            // if distance is less than 10 cm, reset sizer to 8 and update dropdown menu
+            if (d &lt; 10) {
+                // changes text size to 50
+                textSize(50);
+                // displays reset message under distance info
+                text("doodle reset!", windowWidth / 2, windowHeight / 3);
+                // resets sizer variable and lastSizer variable to 8
+                lastSizer = 8;
+                // sets sizer variable to 8
+                sizer = 8;
+                // updates dropdown menu to show 8 X 8 selected
+                mySelect.selected('8 X 8');
+            }
+        }
+
+        // function that sends data to arduino
+        function sendData() {
+            // checks is lastSizer is different from sizer
+            if (lastSizer != sizer) {
+                // writes sizer value to console
+                console.log('writing:', sizer);
+                // writes sizer value to port
+                port.write(sizer);
+                // updates lastSizer to sizer value
+                lastSizer  = sizer;
+            }
+        }
+
+        //Serial connection 
+        function setupSerial() {
+            port = createSerial();
+
+            // Check to see if there are any ports we have used previously
+            let usedPorts = usedSerialPorts();
+            if (usedPorts.length > 0) {
+                // If there are ports we've used, open the first one
+                port.open(usedPorts[0], BAUD_RATE);
+            }
+
+            // create a connect button
+            connectBtn = createButton("Connect to Arduino");
+            connectBtn.position(5, 5); // Position the button in the top left of the screen.
+            connectBtn.mouseClicked(onConnectButtonClicked); // When the button is clicked, run the onConnectButtonClicked function
+        }
+
+        function checkPort() {
+            if (!port.opened()) {
+                // If the port is not open, change button text
+                connectBtn.html("Connect to Arduino");
+                // Set background to gray
+                background("gray");
+                return false;
+            } else {
+                // Otherwise we are connected
+                connectBtn.html("Disconnect");
+                background("purple");
+                return true;
+            }
+        }
+
+        function onConnectButtonClicked() {
+        // When the connect button is clicked
+            if (!port.opened()) {
+                // If the port is not opened, we open it
+                port.open(BAUD_RATE);
+            } else {
+                // Otherwise, we close it!
+                port.close();
+            }
+        }</code>
+      </pre>
+    </div>
+  </body>
+</html>
