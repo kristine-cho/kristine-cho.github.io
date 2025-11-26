@@ -37,15 +37,325 @@
     </div>
 
     <div> 
-      <h2> Code Snippet</h2>
+      <h2>Arduino Code Snippet</h2>
       <pre>
         <code> 
-          fhdsf
-          fd{
-        }</code>
+          // adding ultrasonic library
+          #include &lt;Ultrasonic.h>
+          // definding which pins are used for ultrasonic sensor
+          Ultrasonic ultrasonic(10, 9);
+          // intitialized varaiable for distance as gabagoop
+          int gabagoop;
+          // imports LiquidCrystal library for screen
+          #include &lt;LiquidCrystal.h>
+          // identifies what pins the lcd screen is connected to
+          LiquidCrystal lcd(12, 11, 5, 4, 3, 2);
+          // initializes pin 6 as green led
+          int green = 6;
+          // initializes pin 8 as red led
+          int red = 8;
+          // initializes mode as 1
+          int mode = 1;
+
+          void setup() {
+            // sets baud rate to 9600
+            Serial.begin(9600);
+            // sets green led as output
+            pinMode(green,OUTPUT);
+            // sets red led as output
+            pinMode(red,OUTPUT);
+            // sets up where the lcd's number of columns and rows
+            lcd.begin(16,2);
+          }
+
+          void loop() {
+            // sets gabagoop as read value from ultrasonic sensor
+            gabagoop = ultrasonic.read();
+            // prints gabagoop value into serial monitor
+            Serial.println(gabagoop);
+            // delays .3 seconds
+            delay(300);
+            // adds function that blinks lights when distance is less
+            // than 100 cm
+            freakout();
+            // sets cursor to top left line
+            lcd.setCursor(0,0);
+            
+            // if recieving data from js page, then change the lcd screen
+            // and led visible
+            if (Serial.available() > 0) {
+              // clears screen
+              lcd.clear();
+              // prints content on screen
+              lcd.print("mic on, vid on");
+              // calls function speaknt
+              speaknt();
+              // sets mode to value received from js code page
+              mode = Serial.read();
+              // if value is 0, no lights, screen changes to 
+              // "pick a mode"
+              if (mode == 0) {
+                lcd.clear();
+                lcd.print("pick a mode");
+                digitalWrite(red,LOW);
+                digitalWrite(green,LOW);
+              }
+              // if value is 1-6, changes lights and screen 
+              // depending on value
+              if (mode == 1) {
+                lcd.clear();
+                lcd.print("mic on, vid on");
+                speaknt();
+              } else if (mode == 2) {
+                lcd.clear();
+                lcd.print("mic off, vid on");
+                speak();
+              } else if (mode == 3){
+                lcd.clear();
+                lcd.print("mic on, vid off");
+                speaknt();
+              } else if (mode == 4) {
+                lcd.clear();
+                lcd.print("mic off, vid off");
+                speak();
+              } else if ( mode== 5) {
+                lcd.clear();
+                lcd.print("study time");
+                speak();
+              } else if (mode == 6) {
+                lcd.clear();
+                lcd.print("locked-in time");
+                speaknt();
+              }
+            }
+          }
+
+          //  function that blinks both red and green 
+          // lights 3 times if distance from ultrasonic sensor
+          // is less than 100 cm
+          void freakout() {
+            if (gabagoop &lt;= 100) {
+              // lights both on
+              digitalWrite(red,HIGH);
+              digitalWrite(green,HIGH);
+              // wait to see change in led
+              delay(100);
+              // lights both off
+              digitalWrite(red,LOW);
+              digitalWrite(green,LOW);
+              // wait to see change in led
+              delay(100);
+              // lights both on
+              digitalWrite(red,HIGH);
+              digitalWrite(green,HIGH);
+              // wait to see change in led
+              delay(100);
+              // lights both off
+              digitalWrite(red,LOW);
+              digitalWrite(green,LOW);
+              // wait to see change in led
+              delay(100);
+              // lights both on
+              digitalWrite(red,HIGH);
+              digitalWrite(green,HIGH);
+              // wait to see change in led
+              delay(100);
+              // lights both off
+              digitalWrite(red,LOW);
+              digitalWrite(green,LOW);
+              // wait to see change in led
+              delay(100);
+            }
+          }
+
+          // function that turns the green led on
+          // and prints "can talk" on the second line
+          void speak() {
+            digitalWrite(red,LOW);
+            digitalWrite(green,HIGH);
+            lcd.setCursor(0,1);
+            lcd.print("can talk");
+          }
+
+          // function that turns the red led on
+          // and prints "cannot talk" on the second line
+          void speaknt() {
+            digitalWrite(green,LOW);
+            digitalWrite(red,HIGH);
+            lcd.setCursor(0,1);
+            lcd.print("cannot talk");
+          }</code>
       </pre>
-      
     </div>
+
+    <div> 
+      <h2> JS Code Snippet</h2>
+      <pre>
+        <code> 
+          // setting baud rate for serial communication
+          const BAUD_RATE = 9600;
+          // created variables prot and connectBtn 
+          let port, connectBtn;
+          // created variable to hold size selection
+          let sizer = 1;
+          // created variable to hold last size sent
+          let lastSizer;
+
+          // fuction sets up the p5 page
+          function setup() {
+            // runs serial setup function
+            setupSerial(); 
+
+            // creates cacnvas the size of the window
+            createCanvas(windowWidth, windowHeight);
+
+            // p5 text settings, font verdana, size 50, bold, center aligned 
+            textFont("Verdana", 50);
+            textStyle(BOLD);
+            textAlign(CENTER, CENTER);
+            // function thta makes dropdown menu
+            makeSize();
+          }
+
+          // function that runs in a loop that draws the p5 page
+          function draw() {
+            // sets the sizer variable to the corresponding value
+            btnData();
+            // sends data to arduino
+            sendData();
+            // get data from arduino
+            receiveData();
+            // writes information on p5 page
+            drawing(dist);
+          }
+
+          // function that makes dropdown menu for size selection
+          function makeSize() {
+            // Create a dropdown
+            mySelect = createSelect();
+            // location for dropdown menu
+            mySelect.position(windowWidth/2, windowHeight/2);
+
+            // adding mode options 
+            mySelect.option('--------');
+            mySelect.option('mic on, vid on');
+            mySelect.option('mic off, vid on');
+            mySelect.option('mic on, vid off');
+            mySelect.option('mic off, vid off');
+            mySelect.option('study time');
+            mySelect.option('locked-in time');
+          }
+
+          // function that sets sizer variable based on dropdown selection
+          function btnData() {
+            // collect selected value
+            let s = mySelect.selected();
+            // set sizer variable based on selection
+            if (s === '--------') {
+              sizer = 0;
+            } else if (s === 'mic on, vid on') {
+              sizer = 1;
+            } else if (s === 'mic off, vid on') {
+              sizer = 2;
+            } else if (s === 'mic on, vid off') {
+              sizer = 3;
+            } else if (s === 'mic off, vid off') {
+              sizer = 4;
+            } else if (s === 'study time') {
+              sizer = 5;
+            }else if (s === 'locked-in time') {
+              sizer = 6;
+            }
+          }
+
+          // function that sends data to arduino
+          function sendData() {
+            // checks is lastSizer is different from sizer
+            if (lastSizer != sizer) {
+              // writes sizer value to console
+              console.log('writing:', sizer);
+              // writes sizer value to port
+              port.write(sizer);
+              // updates lastSizer to sizer value
+              lastSizer  = sizer;
+            }
+          }
+
+          // function that receives data from arduino
+          function receiveData() {
+              // checks if port is open
+              const portIsOpen = checkPort();
+              // if not open, exit function
+              if (!portIsOpen) return;
+
+              // reads from port till new line
+              let str = port.readUntil("\n"); 
+              // is there is nothing, exit function
+              if (str.length == 0) return;
+              // trim the whitespace and convert the string to a number
+              dist = Number(str.trim());
+          }
+
+          // function that writes information on the p5 page
+          function drawing(d) {
+            // function that adds text if distance is less than or equal to 100 cm
+            if (d <= 100) {
+              textSize(100);
+              // displays someone is here message
+              text("someone is here", windowWidth / 2, windowHeight / 3);
+            }
+            // text size to 75
+            textSize(75);
+            // displays mode message
+            text("choose your meeting mode", windowWidth / 2, windowHeight * 5/ 12);
+            
+          }
+
+          //Serial connection 
+          function setupSerial() {
+            port = createSerial();
+
+            // Check to see if there are any ports we have used previously
+            let usedPorts = usedSerialPorts();
+            if (usedPorts.length > 0) {
+              // If there are ports we've used, open the first one
+              port.open(usedPorts[0], BAUD_RATE);
+            }
+
+            // create a connect button
+            connectBtn = createButton("Connect to Arduino");
+            connectBtn.position(5, 5); // Position the button in the top left of the screen.
+            connectBtn.mouseClicked(onConnectButtonClicked); // When the button is clicked, run the onConnectButtonClicked function
+          }
+
+          function checkPort() {
+            if (!port.opened()) {
+              // If the port is not open, change button text
+              connectBtn.html("Connect to Arduino");
+              // Set background to gray
+              background("gray");
+              return false;
+            } else {
+              // Otherwise we are connected
+              connectBtn.html("Disconnect");
+              background("purple");
+              return true;
+            }
+          }
+
+          function onConnectButtonClicked() {
+            // When the connect button is clicked
+            if (!port.opened()) {
+              // If the port is not opened, we open it
+              port.open(BAUD_RATE);
+            } else {
+              // Otherwise, we close it!
+              port.close();
+            }
+          }</code>
+      </pre>
+    </div>
+
     <div>
       <h2>Write up</h2>
       <p1>
