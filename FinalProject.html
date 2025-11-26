@@ -17,22 +17,52 @@
       <h2>Concept</h2>
       <img src="meetingAlert.png" /> 
       <p1> 
-        vdgdfgd
+        My prototype's purpose is to reduce unwanted interupptions during online
+        meetings and work time. I initially anticiated making a device that would 
+        hang on the user's door and is controlled by a remote control, but when 
+        thinking more about the idea, having a remote control the users may lose,
+        as well as the uncertainty of the remote possibly not working through the 
+        door, I opted to use the p5 page where uses can connect their device to their 
+        computer, to communicate with their device through their computer. This reduces
+        the fear of having to locate a remote control as well as adding more certianty 
+        of the device working. 
       </p1>
     </div>
-    <div class="header">
-      <img src="highervCircuit.png" />
-      <p>Circuit Image</p>
+    <div>
+      <h2>Circuit Image</h2>
+      <img src="finalCircuit.png" height="500"/>
       <p1>
-        This circuit
+        This circuit contains an LCD screen, an ultrasonic sensor,
+        a red LED, and a green LED, and a potentiometer. The potentiometer
+        is used to adjust the brightness of the LCD screen. The LCD screen 
+        is used to display the current mode of the meeting and whether the
+        user is able to talk or not. The ultrasonic sensor is used to detect 
+        if someone is near the user's workspace. The red and green LEDs are
+        used to indicate whether the user is able to talk or not. The green
+        LED indicates that the user can talk, while the red LED indicates
+        that the user cannot talk. When someone is detected near the user's
+        workspace, both LEDs blink to alert the user of their presence.
+        The reason for the complicated circuit and wiring is due to fitting
+        all components into a box for the prototype. Without having the complicated
+        wiring, the lcd screen and ultrasonic sensor would not be able to face the 
+        same direction, which is necessary for the prototype to function properly.
+        The LEDs are also placed in unconventional ways(not connected to the breadboard)
+        becaue if connected to the breadboard, they would not be visible from outside 
+        the box as the breadboard lies fully inside the box. 
       </p1>
     </div>
 
-    <div class="header">
-      <img src="higherVschematic-kacho-1.jpg" />
-      <p>Schematic</p>
-      <p1> 
-        For the schematic, 
+    <div>
+      <h2>Schematic</h2>
+      <img src="finalSchematic-kacho-1.jpg" height="500"/>
+      <p1>
+        For the schematic, I have 2 leds connected to pins 6 and 8 with 220 ohm resistors.
+        The ultrasonic sensor is connected to pins 9 and 10. The LCD screen is connected
+        to pins 2, 3, 4, 5, 11, and 12. Though the schematic is very simple, the actual wiring 
+        of the circuit is more complicated due to fitting all the components in the box with 
+        the correct orientation for the prototype to function properly and as intended. All 
+        components are powered by the 5V and pins throughout the arduino and also share the 
+        same ground pin so there is no difference in voltage. 
       </p1>
     </div>
 
@@ -299,7 +329,7 @@
           // function that writes information on the p5 page
           function drawing(d) {
             // function that adds text if distance is less than or equal to 100 cm
-            if (d <= 100) {
+            if (d &lt;= 100) {
               textSize(100);
               // displays someone is here message
               text("someone is here", windowWidth / 2, windowHeight / 3);
@@ -325,7 +355,8 @@
             // create a connect button
             connectBtn = createButton("Connect to Arduino");
             connectBtn.position(5, 5); // Position the button in the top left of the screen.
-            connectBtn.mouseClicked(onConnectButtonClicked); // When the button is clicked, run the onConnectButtonClicked function
+            connectBtn.mouseClicked(onConnectButtonClicked); 
+            // When the button is clicked, run the onConnectButtonClicked function
           }
 
           function checkPort() {
@@ -359,14 +390,35 @@
     <div>
       <h2>Write up</h2>
       <p1>
-        foeifjsoijf
+        The purpose of this prototype was to create a device that would help users 
+        to have less unwanted interupptions during meetings or during work time. Users can 
+        choose a mode that will then inform visitors of the users availabilty to chat
+        without any verbal interupptions. Through the p5 page, the user can select 
+        from 6 different modes using a dropdown menu. 
+        The modes are as follows:<br>
+        1. mic on, vid on - user can talk<br>
+        2. mic off, vid on - user cannot talk<br>
+        3. mic on, vid off - user can talk<br>
+        4. mic off, vid off - user cannot talk<br>
+        5. study time - user cannot talk<br>
+        6. locked-in time - user cannot talk<br>
+        When the user selects a mode from the dropdown menu, the LCD screen updates to
+        display the selected mode. Additionally, depending on the mode selected, 
+        the red or green LED will turn on to indicate whether the user can talk or 
+        not. The green LED indicates that the user can talk, while the red LED indicates 
+        that the user cannot talk. 
+        If the device detects if someone is nearing the user's workspace, both red and green
+        LEDs blink to alert the user of their presence as well as bringing the detected 
+        person's attention to the device. Additionally, a message "someone is here" appears
+        on the p5 web page to further alert the user in case their view of the person is 
+        abstructed.
       </p1>
     </div>
 
     <div>
       <h2>Circuit's Operation video</h2>
       <video width=100% height='600' controls>
-        <source src="finalProjectVideo.mp4" type="video/mp4" />
+        <source src="final439.mp4" type="video/mp4" />
     </div>
   </body>
 </html>
