@@ -87,6 +87,9 @@
           // initializes mode as 1
           int mode = 1;
 
+          int greenCount = 0;
+          int redCount = 0;
+
           void setup() {
             // sets baud rate to 9600
             Serial.begin(9600);
@@ -96,6 +99,14 @@
             pinMode(red,OUTPUT);
             // sets up where the lcd's number of columns and rows
             lcd.begin(16,2);
+            // clears screen
+            lcd.clear();
+            // prints line "connect and"
+            lcd.print("connect and");
+            // moves cursor to bottom left
+            lcd.setCursor(0,1);
+            // prints "pick a mode"
+            lcd.print("pick a mode");
           }
 
           void loop() {
@@ -103,116 +114,120 @@
             gabagoop = ultrasonic.read();
             // prints gabagoop value into serial monitor
             Serial.println(gabagoop);
-            // delays .3 seconds
-            delay(300);
-            // adds function that blinks lights when distance is less
-            // than 100 cm
-            freakout();
+            // delays for .1 sec
+            delay(100);
             // sets cursor to top left line
             lcd.setCursor(0,0);
-            
-            // if recieving data from js page, then change the lcd screen
-            // and led visible
+            // works if there is feedback from p5 js code page
             if (Serial.available() > 0) {
-              // clears screen
+              // sets mode value as the value received from p5 js code page
+              mode = Serial.read(); 
+              // sets mode to value received from p5 js code page using modeFind function
+              // if something is detected, calls freakout function
+              if (gabagoop &lt;= 50) {
+                freakout();
+              }
+              modeFind();
+            }
+          }
+
+          // function that changes the screen and led used 
+          // depending on which mode is selected
+          void modeFind() {
+            if (mode == 0) {
+              //clears screen
               lcd.clear();
-              // prints content on screen
+              // prints message
+              lcd.print("pick a mode");
+              //changes lights to off
+              digitalWrite(red,LOW);
+              digitalWrite(green,LOW);
+            } else if (mode == 1) {
+              lcd.clear();
               lcd.print("mic on, vid on");
               // calls function speaknt
               speaknt();
-              // sets mode to value received from js code page
-              mode = Serial.read();
-              // if value is 0, no lights, screen changes to 
-              // "pick a mode"
-              if (mode == 0) {
-                lcd.clear();
-                lcd.print("pick a mode");
-                digitalWrite(red,LOW);
-                digitalWrite(green,LOW);
-              }
-              // if value is 1-6, changes lights and screen 
-              // depending on value
-              if (mode == 1) {
-                lcd.clear();
-                lcd.print("mic on, vid on");
-                speaknt();
-              } else if (mode == 2) {
-                lcd.clear();
-                lcd.print("mic off, vid on");
-                speak();
-              } else if (mode == 3){
-                lcd.clear();
-                lcd.print("mic on, vid off");
-                speaknt();
-              } else if (mode == 4) {
-                lcd.clear();
-                lcd.print("mic off, vid off");
-                speak();
-              } else if ( mode== 5) {
-                lcd.clear();
-                lcd.print("study time");
-                speak();
-              } else if (mode == 6) {
-                lcd.clear();
-                lcd.print("locked-in time");
-                speaknt();
-              }
+            } else if (mode == 2) {
+              lcd.clear();
+              lcd.print("mic off, vid on");
+              speak();
+            } else if (mode == 3){
+              lcd.clear();
+              lcd.print("mic on, vid off");
+              speaknt();
+            } else if (mode == 4) {
+              lcd.clear();
+              lcd.print("mic off, vid off");
+              speak();
+            } else if ( mode== 5) {
+              lcd.clear();
+              lcd.print("study time");
+              speak();
+            } else if (mode == 6) {
+              lcd.clear();
+              lcd.print("locked-in time");
+              speaknt();
             }
           }
 
           //  function that blinks both red and green 
-          // lights 3 times if distance from ultrasonic sensor
-          // is less than 100 cm
+          // lights 3 times 
           void freakout() {
-            if (gabagoop &lt;= 100) {
-              // lights both on
-              digitalWrite(red,HIGH);
-              digitalWrite(green,HIGH);
-              // wait to see change in led
-              delay(100);
-              // lights both off
-              digitalWrite(red,LOW);
-              digitalWrite(green,LOW);
-              // wait to see change in led
-              delay(100);
-              // lights both on
-              digitalWrite(red,HIGH);
-              digitalWrite(green,HIGH);
-              // wait to see change in led
-              delay(100);
-              // lights both off
-              digitalWrite(red,LOW);
-              digitalWrite(green,LOW);
-              // wait to see change in led
-              delay(100);
-              // lights both on
-              digitalWrite(red,HIGH);
-              digitalWrite(green,HIGH);
-              // wait to see change in led
-              delay(100);
-              // lights both off
-              digitalWrite(red,LOW);
-              digitalWrite(green,LOW);
-              // wait to see change in led
-              delay(100);
-            }
+            // lights both on
+            digitalWrite(red,HIGH);
+            digitalWrite(green,HIGH);
+            // wait to see change in led
+            delay(100);
+            // lights both off
+            digitalWrite(red,LOW);
+            digitalWrite(green,LOW);
+            // wait to see change in led
+            delay(100);
+            // lights both on
+            digitalWrite(red,HIGH);
+            digitalWrite(green,HIGH);
+            // wait to see change in led
+            delay(100);
+            // lights both off
+            digitalWrite(red,LOW);
+            digitalWrite(green,LOW);
+            // wait to see change in led
+            delay(100);
+            // lights both on
+            digitalWrite(red,HIGH);
+            digitalWrite(green,HIGH);
+            // wait to see change in led
+            delay(100);
+            // lights both off
+            digitalWrite(red,LOW);
+            digitalWrite(green,LOW);
+            // wait to see change in led
+            delay(100);
           }
 
           // function that turns the green led on
           // and prints "can talk" on the second line
           void speak() {
+            // turns on green led
             digitalWrite(red,LOW);
+            // turns off red led
             digitalWrite(green,HIGH);
+            // moves cursor to bottom left
             lcd.setCursor(0,1);
+            // writes message
             lcd.print("can talk");
           }
 
           // function that turns the red led on
           // and prints "cannot talk" on the second line
           void speaknt() {
+            // turns off green led
             digitalWrite(green,LOW);
+            // turns on red led
             digitalWrite(red,HIGH);
+            // moves cursor to bottom left
             lcd.setCursor(0,1);
+            // writes message
             lcd.print("cannot talk");
           }</code>
       </pre>
@@ -328,17 +343,21 @@
 
           // function that writes information on the p5 page
           function drawing(d) {
-            // function that adds text if distance is less than or equal to 100 cm
-            if (d &lt;= 100) {
+            // function that adds text if distance is less than or equal to 50 cm
+            if (d &lt;= 50) {
               textSize(100);
               // displays someone is here message
               text("someone is here", windowWidth / 2, windowHeight / 3);
+              // changes holder value to different value so the code
+              lastSizer = 1111;
+              // resends correct mode to arduino, this function is to make sure
+              // the mode is perserved even after freakout() function is relayed
+              sendData();
             }
             // text size to 75
             textSize(75);
             // displays mode message
             text("choose your meeting mode", windowWidth / 2, windowHeight * 5/ 12);
-            
           }
 
           //Serial connection 
@@ -405,9 +424,8 @@
         When the user selects a mode from the dropdown menu, the LCD screen updates to
         display the selected mode. Additionally, depending on the mode selected, 
         the red or green LED will turn on to indicate whether the user can talk or 
-        not. The green LED indicates that the user can talk, while the red LED indicates 
-        that the user cannot talk. 
-        If the device detects if someone is nearing the user's workspace, both red and green
+        not.
+        If the device detects someone is nearing the user's workspace, both red and green
         LEDs blink to alert the user of their presence as well as bringing the detected 
         person's attention to the device. Additionally, a message "someone is here" appears
         on the p5 web page to further alert the user in case their view of the person is 
@@ -416,9 +434,8 @@
     </div>
 
     <div>
-      <h2>Circuit's Operation video</h2>
-      <video width=100% height='600' controls>
-        <source src="final439.mp4" type="video/mp4" />
+      <h2>Concept and Operation Video</h2>
+      <iframe width=100% height='600' src="https://youtu.be/dEssMT7lR0o">
     </div>
   </body>
 </html>
